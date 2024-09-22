@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Crawler and Descriptor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>URL Crawler and Descriptor</h1>
+        <form id="crawl-form">
+            <input type="url" id="url-input" placeholder="Enter a URL to crawl" required>
+            <button type="submit">Crawl and Describe</button>
+        </form>
+        <div id="result" class="hidden">
+            <h2>Description:</h2>
+            <p id="description"></p>
+        </div>
+        <div id="error" class="hidden">
+            <p id="error-message"></p>
+        </div>
+        <div id="loading" class="hidden">
+            <p>Processing... Please wait.</p>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
