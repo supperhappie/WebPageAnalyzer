@@ -13,10 +13,10 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Start Flask App"
+args = "Start FastAPI App"
 
 [[workflows.workflow]]
-name = "Start Flask App"
+name = "Start FastAPI App"
 author = "agent"
 
 [workflows.workflow.metadata]
