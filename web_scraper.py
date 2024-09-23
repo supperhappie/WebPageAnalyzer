@@ -1,14 +1,55 @@
-import hashlib
+from typing import Dict, Tuple, List
 from newspaper import Article
-from typing import Dict, Tuple
-
-# In-memory cache for checksums
-checksum_cache: Dict[str, str] = {}
-
+import hashlib
 import sqlite3
-from typing import Tuple
+import xml.etree.ElementTree as ET
+import requests
+from bs4 import BeautifulSoup
 
-def get_website_text_content(url: str) -> Tuple[str, bool]:
+def get_langchain_sitemap_urls() -> List[str]:
+    # In-memory cache for checksums
+    checksum_cache: Dict[str, str] = {}
+
+    # Fetch the XML sitemap
+    response = requests.get("https://python.langchain.com/sitemap.xml")
+
+    # Parse the XML content
+    root = ET.fromstring(response.content)
+
+    # Initialize a list to store URLs
+    urls = []
+
+    # Iterate over all <loc> tags in the XML and extract URLs
+    for url in root.findall(".//{http://www.sitemaps.org/schemas/sitemap/0.9}loc"):
+        urls.append(url.text)
+
+    return urls
+
+def get_langchain_api_reference_urls() -> List[str]:
+    # URL of the page with the sidebar navigation items
+    url_api_reference = "https://python.langchain.com/api_reference/"
+    response = requests.get(url_api_reference)
+
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    # Find all 'a' tags within the 'ul' elements with class 'nav bd-sidenav'
+    links = soup.find_all('ul', class_='nav bd-sidenav')
+
+    # Initialize a list to store the href values
+    hrefs = []
+
+    # Loop through each 'ul.nav.bd-sidenav' and extract all 'a' hrefs
+    for ul in links:
+        for a in ul.find_all('a', href=True):
+            hrefs.append(a['href'])
+
+    # Print the list of URLs
+    return(hrefs)
+
+
+
+def get_website_text_content(url: str) -> Tuple[int, str, bool]:
     """
     This function takes a URL and returns the main text content of the website and a boolean indicating whether the content has changed.
     """
@@ -69,3 +110,9 @@ def get_website_text_content(url: str) -> Tuple[str, bool]:
     print(f"Debug: Content changed - {content_changed}")
 
     return url_id, content, content_changed
+
+# test code 
+# urls = get_langchain_sitemap_urls()
+# print(urls)
+# urls = get_langchain_api_reference_urls()
+# print(urls)
