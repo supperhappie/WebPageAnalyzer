@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, HTMLResponse
 from pydantic import BaseModel
 from web_scraper import get_website_text_content
-from chat_request import send_openai_request
+from chat_request import send_openai_request_description, send_openai_request_keywords  
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 import os
@@ -45,16 +45,20 @@ async def crawl(url_request: UrlRequest):
 
     try:
         # Crawl the website
-        content = get_website_text_content(url)
+        url_id, content, content_changed = get_website_text_content(url)        
+        print(f"Debug: Website crawled. URL ID: {url_id}, Content changed: {content_changed}")
 
         # Generate description using 4o-mini model
-        prompt = f"Provide a brief description of the following website content:\n\n{content[:1000]}..."
-        description = send_openai_request(prompt)
+        
+        description = send_openai_request_description(url_id, content, content_changed)
+        keywords = send_openai_request_keywords(url_id, content, content_changed)
+        print(f"Debug: \n\tDescription: {description[:50]} \n\tKeywords: {keywords[:50]}")
 
-        return JSONResponse(content={"description": description})
+        return JSONResponse(content={"description": description, "keywords": keywords})
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+    # uvicorn.run(app, host="0.0.0.0", port=5000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=5000, reload=True, workers=4)

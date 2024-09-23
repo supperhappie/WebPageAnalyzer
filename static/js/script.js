@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlInput = document.getElementById('url-input');
     const resultDiv = document.getElementById('result');
     const descriptionP = document.getElementById('description');
+    const keywordsP = document.getElementById('keywords');
     const errorDiv = document.getElementById('error');
     const errorMessage = document.getElementById('error-message');
     const loadingDiv = document.getElementById('loading');
@@ -28,21 +29,24 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const data = await response.json();
+            console.log("Received data:", data);
 
             if (response.ok) {
-                showResult(data.description);
+                showResult(data.description, data.keywords);
             } else {
                 showError(data.error || 'An error occurred while processing your request');
             }
         } catch (error) {
+            console.error("Fetch error:", error);
             showError('An error occurred while communicating with the server');
         } finally {
             hideLoading();
         }
     });
 
-    function showResult(description) {
+    function showResult(description, keywords) {
         descriptionP.textContent = description;
+        keywordsP.textContent = keywords;
         resultDiv.classList.remove('hidden');
         errorDiv.classList.add('hidden');
     }

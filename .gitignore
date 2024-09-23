@@ -1,2 +1,5 @@
 myenv/
 .env
+*.pyc
+settings.json
+*.db
