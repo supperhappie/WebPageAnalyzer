@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, HTMLResponse
 from pydantic import BaseModel
 from web_scraper import get_website_text_content
-from chat_request import send_openai_request_description, send_openai_request_keywords  
+from chat_request import send_openai_request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 import os
@@ -49,9 +49,10 @@ async def crawl(url_request: UrlRequest):
         print(f"Debug: Website crawled. URL ID: {url_id}, Content changed: {content_changed}")
 
         # Generate description using 4o-mini model
-        
-        description = send_openai_request_description(url_id, content, content_changed)
-        keywords = send_openai_request_keywords(url_id, content, content_changed)
+
+        description, keywords = send_openai_request(url_id, content, content_changed)
+        # description = send_openai_request_description(url_id, content, content_changed)
+        # keywords = send_openai_request_keywords(url_id, content, content_changed)
         print(f"Debug: \n\tDescription: {description[:50]} \n\tKeywords: {keywords[:50]}")
 
         return JSONResponse(content={"description": description, "keywords": keywords})

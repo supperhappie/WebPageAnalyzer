@@ -5,6 +5,7 @@ import sqlite3
 import xml.etree.ElementTree as ET
 import requests
 from bs4 import BeautifulSoup
+from chat_request import send_openai_request
 
 def get_langchain_sitemap_urls() -> List[str]:
     # In-memory cache for checksums
@@ -116,3 +117,23 @@ def get_website_text_content(url: str) -> Tuple[int, str, bool]:
 # print(urls)
 # urls = get_langchain_api_reference_urls()
 # print(urls)
+
+def update_website_description_and_keywords():
+    sitemap_urls = get_langchain_sitemap_urls()
+    api_reference_urls = get_langchain_api_reference_urls()
+    max_urls = len(sitemap_urls) + len(api_reference_urls)
+    cnt = 0
+    for url in sitemap_urls:
+        url_id, content, content_changed = get_website_text_content(url)
+        description, keywords = send_openai_request(url_id=url_id, content=content, content_changed=content_changed)
+        cnt += 1
+        print(f"[{cnt}/{max_urls}] \n\tdescription: {description[:100]}\n\tkeywords: {keywords[:100]}")
+
+    for url in api_reference_urls:
+        url_id, content, content_changed = get_website_text_content(url)
+        description, keywords = send_openai_request(url_id=url_id, content=content, content_changed=content_changed)
+        cnt += 1
+        print(f"[{cnt}/{max_urls}] \n\tdescription: {description[:100]}\n\tkeywords: {keywords[:100]}")
+
+
+update_website_description_and_keywords()
