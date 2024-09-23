@@ -43,7 +43,7 @@ def send_openai_request_description(url_id: int, content: str, content_changed: 
         # If content_changed is False, return the existing description
         cursor.execute("SELECT content_description FROM website_snapshots WHERE id = ?", (url_id,))
         result = cursor.fetchone()
-        if result:
+        if result and result[0]:
             print(f"Debug: Existing description found. Description: {result[0][:50]}...")
             conn.close()
             print("Debug: Database connection closed")
@@ -91,7 +91,7 @@ def send_openai_request_keywords(url_id: int, content: str, content_changed: boo
         # If content_changed is False, return the existing keywords
         cursor.execute("SELECT content_keywords FROM website_snapshots WHERE id = ?", (url_id,))
         result = cursor.fetchone()
-        if result:
+        if result and result[0]:
             print(f"Debug: Existing keywords found. Keywords: {result[0][:50]}...")
             conn.close()
             print("Debug: Database connection closed")
